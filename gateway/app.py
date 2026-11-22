@@ -43,6 +43,7 @@ from gateway.schemas import (
     RequestContext,
     Usage,
 )
+from gateway.usage import UsageWriter
 from gateway.wiring import default_middlewares
 
 log = logging.getLogger("gateway.app")
@@ -133,11 +134,14 @@ def create_app(
         app.state.limiter = Limiter(r)
         app.state.metrics = m
         app.state.sm = sm
+        app.state.usage = UsageWriter(sm)
+        app.state.usage.start()
         app.state.redis = r
         app.state.tasks = set()
         yield
         if app.state.tasks:
             await asyncio.gather(*app.state.tasks, return_exceptions=True)
+        await app.state.usage.close()
         await http.aclose()
         if redis is None:
             await r.aclose()
@@ -207,28 +211,26 @@ def create_app(
         try:
             if not cache_hit and usage.total_tokens:
                 await app.state.limiter.record(key, usage.total_tokens, cost)
-            async with app.state.sm() as s:
-                s.add(
-                    UsageLog(
-                        request_id=ctx.request_id,
-                        api_key_id=key.id,
-                        tenant_id=key.tenant_id,
-                        requested_model=requested_model,
-                        provider=info.provider or None,
-                        upstream_model=info.upstream_model or None,
-                        status=status,
-                        prompt_tokens=usage.prompt_tokens,
-                        completion_tokens=usage.completion_tokens,
-                        cost_usd=cost,
-                        latency_ms=int(latency * 1000),
-                        cache_hit=cache_hit,
-                        fallbacks=info.fallbacks,
-                        retries=info.retries,
-                        stream=stream,
-                        error=error,
-                    )
+            app.state.usage.add(
+                UsageLog(
+                    request_id=ctx.request_id,
+                    api_key_id=key.id,
+                    tenant_id=key.tenant_id,
+                    requested_model=requested_model,
+                    provider=info.provider or None,
+                    upstream_model=info.upstream_model or None,
+                    status=status,
+                    prompt_tokens=usage.prompt_tokens,
+                    completion_tokens=usage.completion_tokens,
+                    cost_usd=cost,
+                    latency_ms=int(latency * 1000),
+                    cache_hit=cache_hit,
+                    fallbacks=info.fallbacks,
+                    retries=info.retries,
+                    stream=stream,
+                    error=error,
                 )
-                await s.commit()
+            )
         except Exception:
             log.exception("failed to record usage")
         log.info(

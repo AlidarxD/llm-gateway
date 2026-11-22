@@ -36,6 +36,7 @@ async def _drain(client):
 
     while client.app.state.tasks:  # type: ignore[attr-defined]
         await asyncio.gather(*list(client.app.state.tasks))
+    await client.app.state.usage.flush()  # type: ignore[attr-defined]
 
 
 async def test_fallback_visible_in_headers(client, auth, providers):

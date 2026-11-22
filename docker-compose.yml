@@ -2,13 +2,18 @@ services:
   app:
     build: .
     ports: ["8000:8000"]
-    env_file:
-      - path: .env
-        required: false
     environment:
       GATEWAY_DATABASE_URL: postgresql+asyncpg://gateway:gateway@postgres:5432/gateway
       GATEWAY_REDIS_URL: redis://redis:6379/0
       GATEWAY_OLLAMA_BASE_URL: ${GATEWAY_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      GATEWAY_ENABLED_PROVIDERS: ${GATEWAY_ENABLED_PROVIDERS:-["fake","ollama"]}
+      GATEWAY_ROUTES_FILE: ${GATEWAY_ROUTES_FILE:-}
+      GATEWAY_WORKERS: ${GATEWAY_WORKERS:-1}
+      GATEWAY_FAKE_FAILURE_RATE: ${GATEWAY_FAKE_FAILURE_RATE:-0}
+      GATEWAY_FAKE_LATENCY_MS: ${GATEWAY_FAKE_LATENCY_MS:-0}
+      GATEWAY_ANTHROPIC_API_KEY: ${GATEWAY_ANTHROPIC_API_KEY:-}
+      GATEWAY_OPENAI_API_KEY: ${GATEWAY_OPENAI_API_KEY:-}
+      GATEWAY_OPENROUTER_API_KEY: ${GATEWAY_OPENROUTER_API_KEY:-}
     extra_hosts: ["host.docker.internal:host-gateway"]
     depends_on:
       postgres: {condition: service_healthy}
