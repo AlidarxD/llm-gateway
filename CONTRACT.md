@@ -29,3 +29,14 @@ Middlewares operate on non-streaming `ChatRequest`/`ChatResponse`. For `stream=t
 
 ## Cache metrics
 Cache middleware sets `ctx.extra["cache_hit"] = True/False` so the core can export hit rate.
+
+## Addendum 2026-11-22: additive, non-breaking
+- `Middleware` protocol, schemas and ordering semantics are **unchanged**.
+- `Pipeline` gained `run_before(req, ctx) -> (req, short_circuit | None, ran)` and
+  `run_after(req, resp, ctx, ran)`; `run()` is built on them. The core uses these for streaming
+  (before → stream → aggregate → after).
+- Streaming + PII: the core forwards deltas through `PIIMiddleware.stream_restorer(ctx)` (any
+  middleware exposing `stream_restorer(ctx)` is honoured), while the aggregated response passed to
+  `after()` keeps placeholders, so the cache never stores real PII.
+- Cache hits on `stream=true` are replayed as SSE chunks by the core.
+- `ctx.extra["cache_hit"]` (bool) feeds the gateway's cache hit-rate metric.
