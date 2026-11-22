@@ -8,6 +8,6 @@ COPY migrations ./migrations
 COPY config ./config
 COPY alembic.ini ./
 RUN uv sync --frozen --no-dev
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" PROMETHEUS_MULTIPROC_DIR=/tmp/prom
 EXPOSE 8000
-CMD ["sh", "-c", "alembic upgrade head && uvicorn gateway.app:create_app --factory --host 0.0.0.0 --port 8000 --workers ${GATEWAY_WORKERS:-1} --no-access-log"]
+CMD ["sh", "-c", "rm -rf /tmp/prom && mkdir -p /tmp/prom && alembic upgrade head && uvicorn gateway.app:create_app --factory --host 0.0.0.0 --port 8000 --workers ${GATEWAY_WORKERS:-1} --no-access-log"]

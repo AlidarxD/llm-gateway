@@ -35,7 +35,11 @@ class Metrics:
         )
         self.retries = Counter("gateway_retries_total", "Retries", ["provider"], registry=r)
         self.breaker_state = Gauge(
-            "gateway_circuit_breaker_open", "1 if breaker open", ["provider"], registry=r
+            "gateway_circuit_breaker_open",
+            "1 if breaker open",
+            ["provider"],
+            registry=r,
+            multiprocess_mode="max",
         )
         self.cache = Counter(
             "gateway_cache_requests_total", "Cache lookups", ["result"], registry=r

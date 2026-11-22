@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import time
 import uuid
 from collections.abc import AsyncGenerator, AsyncIterator, Callable
@@ -14,7 +15,7 @@ from decimal import Decimal
 import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, CollectorRegistry, generate_latest, multiprocess
 from redis.asyncio import Redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -482,6 +483,10 @@ def create_app(
 
     @app.get("/metrics")
     async def metrics_endpoint() -> Response:
+        if os.environ.get("PROMETHEUS_MULTIPROC_DIR"):  # several uvicorn workers: aggregate them
+            reg = CollectorRegistry()
+            multiprocess.MultiProcessCollector(reg)  # type: ignore[no-untyped-call]
+            return Response(generate_latest(reg), media_type=CONTENT_TYPE_LATEST)
         return Response(generate_latest(app.state.metrics.registry), media_type=CONTENT_TYPE_LATEST)
 
     return app
