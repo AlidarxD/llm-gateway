@@ -15,7 +15,12 @@ dependencies = [
     "alembic>=1.13",
     "redis>=5.0",
     "prometheus-client>=0.20",
+    "numpy>=1.26",
 ]
+
+[project.optional-dependencies]
+# Opt-in semantic cache (multilingual-e5-small via ONNX on CPU)
+semantic = ["onnxruntime>=1.18", "tokenizers>=0.20", "huggingface-hub>=0.24"]
 
 [dependency-groups]
 dev = [
@@ -26,6 +31,7 @@ dev = [
     "locust>=2.31",
     "aiosqlite>=0.20",
     "fakeredis>=2.23",
+    "hypothesis>=6.100",
 ]
 
 [build-system]
@@ -52,3 +58,12 @@ plugins = ["pydantic.mypy"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+
+[[tool.mypy.overrides]]
+# Optional "semantic" extra: not installed in CI.
+module = ["onnxruntime", "onnxruntime.*", "tokenizers", "tokenizers.*", "huggingface_hub", "huggingface_hub.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["gateway.middleware.cache.embedder"]
+warn_unused_ignores = false
