@@ -52,6 +52,8 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     openrouter_api_key: SecretStr | None = None
     ollama_base_url: str = "http://localhost:11434"
+    fake_latency_ms: int = 0
+    fake_failure_rate: float = 0.0  # random 500/429/timeout on the "fake" provider (demo/load test)
 
     request_timeout_s: float = 30.0
     max_retries: int = 2

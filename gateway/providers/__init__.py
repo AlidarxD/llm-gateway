@@ -15,7 +15,11 @@ def build_providers(settings: Settings, client: httpx.AsyncClient) -> dict[str, 
     out: dict[str, Provider] = {}
     for name in settings.enabled_providers:
         if name == "fake":
-            out[name] = FakeProvider()
+            out[name] = FakeProvider(
+                latency_s=settings.fake_latency_ms / 1000, failure_rate=settings.fake_failure_rate
+            )
+        elif name == "fake2":  # always-healthy twin, used as a fallback target in demos
+            out[name] = FakeProvider("fake2", latency_s=settings.fake_latency_ms / 1000)
         elif name == "ollama":
             out[name] = OpenAICompatProvider("ollama", f"{settings.ollama_base_url}/v1", client)
         elif name == "openai" and settings.openai_api_key:

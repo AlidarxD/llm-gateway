@@ -140,3 +140,23 @@ async def test_metrics_endpoint(client, auth):
 async def test_health(client):
     assert (await client.get("/healthz")).json() == {"status": "ok"}
     assert (await client.get("/readyz")).status_code == 200
+
+
+async def test_fake_failure_rate_is_probabilistic():
+    import random
+
+    from gateway.errors import ProviderError
+    from gateway.providers.fake import FakeProvider
+    from gateway.schemas import ChatMessage, ChatRequest
+
+    random.seed(1)
+    p = FakeProvider(failure_rate=0.5)
+    req = ChatRequest(model="m", messages=[ChatMessage(role="user", content="x")])
+    ok = fail = 0
+    for _ in range(100):
+        try:
+            await p.complete(req, "m")
+            ok += 1
+        except ProviderError:
+            fail += 1
+    assert 20 < fail < 80 and ok + fail == 100

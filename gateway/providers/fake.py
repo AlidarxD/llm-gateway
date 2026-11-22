@@ -8,6 +8,7 @@ Failure injection:
 from __future__ import annotations
 
 import asyncio
+import random
 import time
 import uuid
 from collections import deque
@@ -33,9 +34,12 @@ from gateway.schemas import (
 
 
 class FakeProvider:
-    def __init__(self, name: str = "fake", latency_s: float = 0.0) -> None:
+    def __init__(
+        self, name: str = "fake", latency_s: float = 0.0, failure_rate: float = 0.0
+    ) -> None:
         self.name = name
         self.latency_s = latency_s
+        self.failure_rate = failure_rate
         self.script: deque[str] = deque()
         self.calls = 0
 
@@ -50,6 +54,8 @@ class FakeProvider:
         self.calls += 1
         text = self._last_user(req)
         outcome = self.script.popleft() if self.script else "ok"
+        if outcome == "ok" and self.failure_rate and random.random() < self.failure_rate:
+            outcome = random.choice(["500", "429", "timeout"])
         for trig in ("timeout", "429", "500", "400", "slow"):
             if f"[fake:{trig}]" in text:
                 outcome = trig

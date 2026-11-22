@@ -1,0 +1,6 @@
+{
+  "smart": [
+    {"provider": "fake", "model": "fake-smart"},
+    {"provider": "fake2", "model": "fake-smart"}
+  ]
+}
