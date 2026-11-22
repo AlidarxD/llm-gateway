@@ -81,6 +81,7 @@ class SemanticIndex:
         context_hash: str,
         vec: NDArray[np.float32],
         threshold: float,
+        sig: str = "",
     ) -> SemanticHit | None:
         ids = [
             i.decode() if isinstance(i, bytes) else str(i)
@@ -96,7 +97,7 @@ class SemanticIndex:
                 stale.append(eid)  # TTL expired; drop from the index
                 continue
             entry = json.loads(raw)
-            if entry["ctx"] != context_hash:
+            if entry["ctx"] != context_hash or entry.get("sig", "") != sig:
                 continue
             sim = float(np.dot(vec, np.asarray(entry["vec"], dtype=np.float32)))
             if sim >= threshold and (best is None or sim > best.similarity):
@@ -112,10 +113,16 @@ class SemanticIndex:
         context_hash: str,
         vec: NDArray[np.float32],
         response_json: str,
+        sig: str = "",
     ) -> None:
         eid = f"{time.time_ns():x}"
         payload = json.dumps(
-            {"ctx": context_hash, "vec": [round(float(x), 6) for x in vec], "resp": response_json}
+            {
+                "ctx": context_hash,
+                "sig": sig,
+                "vec": [round(float(x), 6) for x in vec],
+                "resp": response_json,
+            }
         )
         await self._r.set(self._key(tenant, model, eid), payload, ex=self._ttl)
         idx = self._idx(tenant, model)

@@ -73,6 +73,7 @@ def make(
     embedder: FakeEmbedder | None = None, **cfg: object
 ) -> tuple[CacheMiddleware, FakeAsyncRedis]:
     r = FakeAsyncRedis()
+    cfg.setdefault("semantic_enabled", True)
     return CacheMiddleware(r, embedder, CacheConfig(**cfg)), r  # type: ignore[arg-type]
 
 
@@ -180,7 +181,7 @@ async def test_semantic_skipped_for_redacted_placeholders() -> None:
 async def test_cache_after_pii_never_stores_pii() -> None:
     iin = make_iin(random.Random(3))
     r = FakeAsyncRedis()
-    cache = CacheMiddleware(r, FakeEmbedder(), CacheConfig())
+    cache = CacheMiddleware(r, FakeEmbedder(), CacheConfig(semantic_enabled=True))
     pipe = Pipeline([PIIMiddleware(), cache])
     seen: list[str] = []
 
@@ -232,3 +233,27 @@ async def test_semantic_index_cap_and_ttl_cleanup() -> None:
     for i in range(6):
         await run(mw, req(f"unique question {i}"), p)
     assert await r.zcard("gw:cache:sidx:t1:m") == 3
+
+
+async def test_lexical_guard_blocks_number_and_negation_changes() -> None:
+    emb = FakeEmbedder(
+        {
+            "convert 100 usd": "g",
+            "convert 200 usd": "g",
+            "can i pay taxes online": "h",
+            "can i not pay taxes online": "h",
+        }
+    )
+    mw, _ = make(emb, default_threshold=0.9)
+    p = Provider()
+    await run(mw, req("convert 100 usd"), p)
+    c = await run(mw, req("convert 200 usd"), p)
+    assert not c.extra["cache_hit"]
+    await run(mw, req("can i pay taxes online"), p)
+    c = await run(mw, req("can i not pay taxes online"), p)
+    assert not c.extra["cache_hit"]
+    off, _ = make(emb, default_threshold=0.9, lexical_guard=False)
+    p2 = Provider()
+    await run(off, req("convert 100 usd"), p2)
+    c = await run(off, req("convert 200 usd"), p2)
+    assert c.extra["cache_type"] == "semantic"

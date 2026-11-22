@@ -1,0 +1,401 @@
+{
+  "n_groups": 100,
+  "n_paraphrase_queries": 300,
+  "n_negative_pairs": 100,
+  "target_cross_group_false_hit": 0.005,
+  "target_negative_false_hit_unmet": 0.02,
+  "chosen_threshold": 0.94,
+  "chosen": {
+    "threshold": 0.94,
+    "hit_rate": 0.38333333333333336,
+    "cross_group_false_hit": 0.0033333333333333335,
+    "negative_false_hit": 0.64,
+    "guard_hit_rate": 0.3433333333333333,
+    "guard_cross_group_false_hit": 0.0033333333333333335,
+    "guard_negative_false_hit": 0.53
+  },
+  "hit_rate_by_lang_at_chosen": {
+    "en": 0.5466666666666666,
+    "kk": 0.5066666666666667,
+    "mixed": 0.03333333333333333,
+    "ru": 0.24444444444444444
+  },
+  "negative_false_hit_by_lang_at_chosen": {
+    "en": 0.5,
+    "kk": 0.8,
+    "ru": 0.35
+  },
+  "paraphrase_sim_mean": 0.9245818759997686,
+  "negative_sim_mean": 0.9460761547088623,
+  "latency": {
+    "single_ms_p50": 22.20855549967382,
+    "single_ms_p95": 44.69225730190374,
+    "batch8_ms_mean": 150.211369799581,
+    "cpu": "x86_64",
+    "cpu_count": 12,
+    "onnx_threads": 2,
+    "model": "intfloat/multilingual-e5-small (fp32 ONNX)"
+  },
+  "curve": [
+    {
+      "threshold": 0.8,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.2,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.805,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.19666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.81,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.19666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.815,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.19333333333333333,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.82,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.19333333333333333,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.825,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.18666666666666668,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.83,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.18,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.835,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.17,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.84,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7966666666666666,
+      "guard_cross_group_false_hit": 0.16666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.845,
+      "hit_rate": 0.88,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7933333333333333,
+      "guard_cross_group_false_hit": 0.16666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.85,
+      "hit_rate": 0.8766666666666667,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.79,
+      "guard_cross_group_false_hit": 0.16666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.855,
+      "hit_rate": 0.8766666666666667,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.79,
+      "guard_cross_group_false_hit": 0.16666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.86,
+      "hit_rate": 0.8633333333333333,
+      "cross_group_false_hit": 0.12,
+      "negative_false_hit": 1.0,
+      "guard_hit_rate": 0.7733333333333333,
+      "guard_cross_group_false_hit": 0.16666666666666666,
+      "guard_negative_false_hit": 0.84
+    },
+    {
+      "threshold": 0.865,
+      "hit_rate": 0.8633333333333333,
+      "cross_group_false_hit": 0.11333333333333333,
+      "negative_false_hit": 0.99,
+      "guard_hit_rate": 0.7733333333333333,
+      "guard_cross_group_false_hit": 0.16,
+      "guard_negative_false_hit": 0.83
+    },
+    {
+      "threshold": 0.87,
+      "hit_rate": 0.8633333333333333,
+      "cross_group_false_hit": 0.10666666666666667,
+      "negative_false_hit": 0.99,
+      "guard_hit_rate": 0.7733333333333333,
+      "guard_cross_group_false_hit": 0.15333333333333332,
+      "guard_negative_false_hit": 0.83
+    },
+    {
+      "threshold": 0.875,
+      "hit_rate": 0.8533333333333334,
+      "cross_group_false_hit": 0.10333333333333333,
+      "negative_false_hit": 0.98,
+      "guard_hit_rate": 0.7666666666666667,
+      "guard_cross_group_false_hit": 0.13666666666666666,
+      "guard_negative_false_hit": 0.82
+    },
+    {
+      "threshold": 0.88,
+      "hit_rate": 0.8333333333333334,
+      "cross_group_false_hit": 0.09333333333333334,
+      "negative_false_hit": 0.97,
+      "guard_hit_rate": 0.75,
+      "guard_cross_group_false_hit": 0.11333333333333333,
+      "guard_negative_false_hit": 0.81
+    },
+    {
+      "threshold": 0.885,
+      "hit_rate": 0.8166666666666667,
+      "cross_group_false_hit": 0.08666666666666667,
+      "negative_false_hit": 0.96,
+      "guard_hit_rate": 0.7366666666666667,
+      "guard_cross_group_false_hit": 0.10333333333333333,
+      "guard_negative_false_hit": 0.8
+    },
+    {
+      "threshold": 0.89,
+      "hit_rate": 0.7966666666666666,
+      "cross_group_false_hit": 0.07333333333333333,
+      "negative_false_hit": 0.95,
+      "guard_hit_rate": 0.72,
+      "guard_cross_group_false_hit": 0.08333333333333333,
+      "guard_negative_false_hit": 0.79
+    },
+    {
+      "threshold": 0.895,
+      "hit_rate": 0.7733333333333333,
+      "cross_group_false_hit": 0.07,
+      "negative_false_hit": 0.93,
+      "guard_hit_rate": 0.6966666666666667,
+      "guard_cross_group_false_hit": 0.08,
+      "guard_negative_false_hit": 0.78
+    },
+    {
+      "threshold": 0.9,
+      "hit_rate": 0.7466666666666667,
+      "cross_group_false_hit": 0.056666666666666664,
+      "negative_false_hit": 0.91,
+      "guard_hit_rate": 0.67,
+      "guard_cross_group_false_hit": 0.06,
+      "guard_negative_false_hit": 0.76
+    },
+    {
+      "threshold": 0.905,
+      "hit_rate": 0.7,
+      "cross_group_false_hit": 0.05333333333333334,
+      "negative_false_hit": 0.9,
+      "guard_hit_rate": 0.6266666666666667,
+      "guard_cross_group_false_hit": 0.056666666666666664,
+      "guard_negative_false_hit": 0.75
+    },
+    {
+      "threshold": 0.91,
+      "hit_rate": 0.6733333333333333,
+      "cross_group_false_hit": 0.04666666666666667,
+      "negative_false_hit": 0.87,
+      "guard_hit_rate": 0.6033333333333334,
+      "guard_cross_group_false_hit": 0.05,
+      "guard_negative_false_hit": 0.73
+    },
+    {
+      "threshold": 0.915,
+      "hit_rate": 0.6466666666666666,
+      "cross_group_false_hit": 0.04,
+      "negative_false_hit": 0.85,
+      "guard_hit_rate": 0.5833333333333334,
+      "guard_cross_group_false_hit": 0.043333333333333335,
+      "guard_negative_false_hit": 0.71
+    },
+    {
+      "threshold": 0.92,
+      "hit_rate": 0.61,
+      "cross_group_false_hit": 0.03,
+      "negative_false_hit": 0.82,
+      "guard_hit_rate": 0.55,
+      "guard_cross_group_false_hit": 0.03,
+      "guard_negative_false_hit": 0.7
+    },
+    {
+      "threshold": 0.925,
+      "hit_rate": 0.5433333333333333,
+      "cross_group_false_hit": 0.02,
+      "negative_false_hit": 0.77,
+      "guard_hit_rate": 0.48333333333333334,
+      "guard_cross_group_false_hit": 0.02,
+      "guard_negative_false_hit": 0.65
+    },
+    {
+      "threshold": 0.93,
+      "hit_rate": 0.49666666666666665,
+      "cross_group_false_hit": 0.02,
+      "negative_false_hit": 0.72,
+      "guard_hit_rate": 0.45,
+      "guard_cross_group_false_hit": 0.02,
+      "guard_negative_false_hit": 0.61
+    },
+    {
+      "threshold": 0.935,
+      "hit_rate": 0.44,
+      "cross_group_false_hit": 0.006666666666666667,
+      "negative_false_hit": 0.69,
+      "guard_hit_rate": 0.39666666666666667,
+      "guard_cross_group_false_hit": 0.006666666666666667,
+      "guard_negative_false_hit": 0.58
+    },
+    {
+      "threshold": 0.94,
+      "hit_rate": 0.38333333333333336,
+      "cross_group_false_hit": 0.0033333333333333335,
+      "negative_false_hit": 0.64,
+      "guard_hit_rate": 0.3433333333333333,
+      "guard_cross_group_false_hit": 0.0033333333333333335,
+      "guard_negative_false_hit": 0.53
+    },
+    {
+      "threshold": 0.945,
+      "hit_rate": 0.3233333333333333,
+      "cross_group_false_hit": 0.0033333333333333335,
+      "negative_false_hit": 0.58,
+      "guard_hit_rate": 0.29333333333333333,
+      "guard_cross_group_false_hit": 0.0033333333333333335,
+      "guard_negative_false_hit": 0.48
+    },
+    {
+      "threshold": 0.95,
+      "hit_rate": 0.2633333333333333,
+      "cross_group_false_hit": 0.0033333333333333335,
+      "negative_false_hit": 0.51,
+      "guard_hit_rate": 0.24,
+      "guard_cross_group_false_hit": 0.0033333333333333335,
+      "guard_negative_false_hit": 0.43
+    },
+    {
+      "threshold": 0.955,
+      "hit_rate": 0.22333333333333333,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.45,
+      "guard_hit_rate": 0.20333333333333334,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.37
+    },
+    {
+      "threshold": 0.96,
+      "hit_rate": 0.16666666666666666,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.41,
+      "guard_hit_rate": 0.15333333333333332,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.34
+    },
+    {
+      "threshold": 0.965,
+      "hit_rate": 0.11,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.33,
+      "guard_hit_rate": 0.1,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.27
+    },
+    {
+      "threshold": 0.97,
+      "hit_rate": 0.07,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.24,
+      "guard_hit_rate": 0.06,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.18
+    },
+    {
+      "threshold": 0.975,
+      "hit_rate": 0.03333333333333333,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.17,
+      "guard_hit_rate": 0.03333333333333333,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.16
+    },
+    {
+      "threshold": 0.98,
+      "hit_rate": 0.016666666666666666,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.08,
+      "guard_hit_rate": 0.016666666666666666,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.07
+    },
+    {
+      "threshold": 0.985,
+      "hit_rate": 0.006666666666666667,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.04,
+      "guard_hit_rate": 0.006666666666666667,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.04
+    },
+    {
+      "threshold": 0.99,
+      "hit_rate": 0.0,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.0,
+      "guard_hit_rate": 0.0,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.0
+    },
+    {
+      "threshold": 0.995,
+      "hit_rate": 0.0,
+      "cross_group_false_hit": 0.0,
+      "negative_false_hit": 0.0,
+      "guard_hit_rate": 0.0,
+      "guard_cross_group_false_hit": 0.0,
+      "guard_negative_false_hit": 0.0
+    }
+  ]
+}

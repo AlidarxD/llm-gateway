@@ -11,6 +11,7 @@ from typing import Any
 
 from gateway.middleware.cache import keys
 from gateway.middleware.cache.embedder import Embedder
+from gateway.middleware.cache.guard import signature
 from gateway.middleware.cache.metrics import CacheMetrics, Kind, Outcome
 from gateway.middleware.cache.store import ExactStore, RedisLike, SemanticIndex
 from gateway.schemas import ChatRequest, ChatResponse, RequestContext
@@ -18,7 +19,7 @@ from gateway.schemas import ChatRequest, ChatResponse, RequestContext
 logger = logging.getLogger("gateway.cache")
 
 STATE_KEY = "_cache_state"
-DEFAULT_SEMANTIC_THRESHOLD = 0.93  # chosen from benchmarks/cache_eval.py, see docs/cache.md
+DEFAULT_SEMANTIC_THRESHOLD = 0.94  # chosen from benchmarks/cache_eval.py, see docs/cache.md
 
 
 @dataclass(slots=True)
@@ -26,11 +27,14 @@ class CacheConfig:
     ttl_seconds: int = 3600
     # Requests with temperature above this are never cached or served from cache.
     max_temperature: float = 0.3
-    semantic_enabled: bool = True
+    # Opt-in: on adversarial minimal pairs the semantic cache false-hits often (docs/cache.md).
+    semantic_enabled: bool = False
     default_threshold: float = DEFAULT_SEMANTIC_THRESHOLD
     # Similarity threshold per model alias; falls back to default_threshold.
     thresholds: Mapping[str, float] = field(default_factory=dict)
     max_semantic_entries: int = 2000
+    # Require equal numbers/negation between query and cached text for a semantic hit.
+    lexical_guard: bool = True
 
     def threshold_for(self, model: str) -> float:
         return self.thresholds.get(model, self.default_threshold)
@@ -40,7 +44,7 @@ class CacheConfig:
 class _State:
     exact_key: str
     store: bool = True
-    semantic: tuple[str, Any] | None = None  # (context_hash, vector)
+    semantic: tuple[str, Any, str] | None = None  # (context_hash, vector, signature)
 
 
 class CacheMiddleware:
@@ -102,12 +106,18 @@ class CacheMiddleware:
             self._observe("semantic", "skip", time.perf_counter())
             return req
         context_hash, text = split
+        sig = signature(text) if self.config.lexical_guard else ""
         started = time.perf_counter()
         try:
             vec = (await asyncio.to_thread(self.embedder.embed, [text]))[0]
-            state.semantic = (context_hash, vec)
+            state.semantic = (context_hash, vec, sig)
             hit = await self._semantic.search(
-                ctx.tenant_id, req.model, context_hash, vec, self.config.threshold_for(req.model)
+                ctx.tenant_id,
+                req.model,
+                context_hash,
+                vec,
+                self.config.threshold_for(req.model),
+                sig,
             )
         except Exception:
             logger.warning("cache semantic lookup failed", exc_info=True)
@@ -141,8 +151,8 @@ class CacheMiddleware:
                 self.metrics.on_store("exact", time.perf_counter() - started)
             if state.semantic is not None:
                 started = time.perf_counter()
-                context_hash, vec = state.semantic
-                await self._semantic.add(ctx.tenant_id, req.model, context_hash, vec, raw)
+                context_hash, vec, sig = state.semantic
+                await self._semantic.add(ctx.tenant_id, req.model, context_hash, vec, raw, sig)
                 if self.metrics is not None:
                     self.metrics.on_store("semantic", time.perf_counter() - started)
         except Exception:
