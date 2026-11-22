@@ -59,6 +59,10 @@ def _err(
     )
 
 
+def _sse_line(c: ChatChunk) -> bytes:
+    return f"data: {c.model_dump_json(exclude_none=True)}\n\n".encode()
+
+
 def response_to_chunks(resp: ChatResponse) -> list[ChatChunk]:
     """Replay a full response as stream chunks (used for cache hits on stream=true)."""
     base = {"id": resp.id, "created": resp.created, "model": resp.model}
@@ -128,7 +132,7 @@ def create_app(
         kwargs = {"sleep": sleep} if sleep else {}
         app.state.router = Router(provs, settings.load_routes(), settings, m, **kwargs)  # type: ignore[arg-type]
         app.state.pipeline = Pipeline(
-            middlewares if middlewares is not None else default_middlewares(settings, r)
+            middlewares if middlewares is not None else default_middlewares(settings, r, m)
         )
         app.state.keys = KeyStore(sm, settings.auth_cache_ttl_s)
         app.state.limiter = Limiter(r)
@@ -346,6 +350,45 @@ def create_app(
             )
             raise
 
+        # PII placeholders must be restored in-flight for the client, while the aggregated
+        # response handed to after() (and thus the cache) keeps the placeholders.
+        restorer = next(
+            (r for mw in ran if (f := getattr(mw, "stream_restorer", None)) and (r := f(ctx))), None
+        )
+
+        def render(c: ChatChunk, final: bool = False) -> list[bytes]:
+            if restorer is None:
+                return [_sse_line(c)]
+            out: list[ChatChunk] = []
+            choices = [ch for ch in c.choices if ch.index == 0]
+            if choices and choices[0].delta.content:
+                restored = restorer.feed(choices[0].delta.content)
+                c = c.model_copy(
+                    update={
+                        "choices": [
+                            ch.model_copy(
+                                update={"delta": ch.delta.model_copy(update={"content": restored})}
+                            )
+                            if ch.index == 0
+                            else ch
+                            for ch in c.choices
+                        ]
+                    }
+                )
+            if final or any(ch.finish_reason for ch in c.choices):
+                tail = restorer.flush()
+                if tail:
+                    out.append(
+                        c.model_copy(
+                            update={
+                                "choices": [ChatChunkChoice(delta=ChatDelta(content=tail))],
+                                "usage": None,
+                            }
+                        )
+                    )
+            out.append(c)
+            return [_sse_line(x) for x in out]
+
         async def sse() -> AsyncGenerator[bytes, None]:
             chunks: list[ChatChunk] = []
             err: str | None = None
@@ -354,17 +397,29 @@ def create_app(
                 if short is not None:
                     for c in response_to_chunks(short):
                         chunks.append(c)
-                        yield f"data: {c.model_dump_json(exclude_none=True)}\n\n".encode()
+                        for b in render(c):
+                            yield b
                 else:
                     assert gen is not None
                     if first is not None:
                         chunks.append(first)
-                        yield f"data: {first.model_dump_json(exclude_none=True)}\n\n".encode()
+                        for b in render(first):
+                            yield b
                     async for c in gen:
                         chunks.append(c)
-                        yield f"data: {c.model_dump_json(exclude_none=True)}\n\n".encode()
+                        for b in render(c):
+                            yield b
             except (ProviderError, AllProvidersFailed) as e:
                 err = str(e)
+                if restorer is not None and (tail := restorer.flush()):
+                    yield _sse_line(
+                        ChatChunk(
+                            id="chatcmpl-tail",
+                            created=int(time.time()),
+                            model=model,
+                            choices=[ChatChunkChoice(delta=ChatDelta(content=tail))],
+                        )
+                    )
                 payload = {"error": {"message": err, "type": "upstream_error"}}
                 yield f"data: {json.dumps(payload)}\n\n".encode()
             yield b"data: [DONE]\n\n"

@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     breaker_reset_s: float = 30.0
 
     auth_cache_ttl_s: float = 30.0
+    pii_enabled: bool = True
+    pii_default_mode: str = "redact"  # redact | block | log_only
+    cache_enabled: bool = True
+    cache_ttl_s: int = 3600
+    cache_max_temperature: float = 0.3
     log_level: str = "INFO"
 
     def load_routes(self) -> dict[str, list[Target]]:

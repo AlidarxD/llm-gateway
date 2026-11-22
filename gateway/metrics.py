@@ -40,6 +40,13 @@ class Metrics:
         self.cache = Counter(
             "gateway_cache_requests_total", "Cache lookups", ["result"], registry=r
         )
+        self.cache_latency = Histogram(
+            "gateway_cache_lookup_seconds",
+            "Cache lookup latency",
+            ["kind", "outcome"],
+            buckets=BUCKETS,
+            registry=r,
+        )
         self.rate_limited = Counter(
             "gateway_rate_limited_total", "Rejected by limits", ["reason"], registry=r
         )
